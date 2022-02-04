@@ -2,9 +2,10 @@ package br.santosfyuri.algaworks.algafood.api.controller;
 
 import br.santosfyuri.algaworks.algafood.domain.exception.EntityInUseException;
 import br.santosfyuri.algaworks.algafood.domain.exception.EntityNotFoundException;
-import br.santosfyuri.algaworks.algafood.domain.model.State;
-import br.santosfyuri.algaworks.algafood.domain.repository.StateRepository;
-import br.santosfyuri.algaworks.algafood.domain.service.StateService;
+import br.santosfyuri.algaworks.algafood.domain.model.Kitchen;
+import br.santosfyuri.algaworks.algafood.domain.model.Restaurant;
+import br.santosfyuri.algaworks.algafood.domain.repository.RestaurantRepository;
+import br.santosfyuri.algaworks.algafood.domain.service.RestaurantService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,36 +16,36 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/states")
-public class StateController {
+@RequestMapping("/restaurants")
+public class RestaurantController {
 
     @Autowired
-    private StateRepository stateRepository;
+    private RestaurantRepository restaurantRepository;
 
     @Autowired
-    private StateService stateService;
+    private RestaurantService restaurantService;
 
     @GetMapping
-    public List<State> list() {
-        return stateRepository.list();
+    public List<Restaurant> list() {
+        return restaurantRepository.list();
     }
 
     @GetMapping(path = "{id}")
-    public ResponseEntity<State> find(@PathVariable Long id) {
-        State state = stateRepository.find(id);
-        if (Objects.nonNull(state)) {
-            return ResponseEntity.ok(state);
+    public ResponseEntity<Restaurant> find(@PathVariable Long id) {
+        Restaurant restaurant = restaurantRepository.find(id);
+        if (Objects.nonNull(restaurant)) {
+            return ResponseEntity.ok(restaurant);
         }
         return ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody State state) {
+    public ResponseEntity<?> save(@RequestBody Restaurant restaurant) {
         try {
-            state = stateService.save(state);
+            restaurant = restaurantService.save(restaurant);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(state);
-        } catch (EntityNotFoundException exception) {
+                    .body(restaurant);
+        } catch(EntityNotFoundException exception) {
             return ResponseEntity.badRequest()
                     .body(exception.getMessage());
         }
@@ -52,13 +53,13 @@ public class StateController {
 
     @PutMapping(path = "{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
-                                    @RequestBody State state) {
+                                    @RequestBody Restaurant restaurant) {
         try {
-            State currentState = stateRepository.find(id);
-            if (Objects.nonNull(currentState)) {
-                BeanUtils.copyProperties(state, currentState, "id");
-                currentState = stateService.save(currentState);
-                return ResponseEntity.ok(currentState);
+            Restaurant currentRestaurant = restaurantRepository.find(id);
+            if (Objects.nonNull(currentRestaurant)) {
+                BeanUtils.copyProperties(restaurant, currentRestaurant, "id");
+                currentRestaurant = restaurantService.save(currentRestaurant);
+                return ResponseEntity.ok(currentRestaurant);
             }
             return ResponseEntity.notFound().build();
         } catch (EntityNotFoundException exception) {
@@ -68,9 +69,9 @@ public class StateController {
     }
 
     @DeleteMapping(path = "{id}")
-    public ResponseEntity<State> delete(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<Kitchen> delete(@PathVariable(value = "id") Long id) {
         try {
-            stateService.delete(id);
+            restaurantService.delete(id);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException exception) {
             return ResponseEntity.notFound().build();

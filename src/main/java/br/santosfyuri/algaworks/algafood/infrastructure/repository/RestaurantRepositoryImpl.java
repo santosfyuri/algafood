@@ -2,12 +2,14 @@ package br.santosfyuri.algaworks.algafood.infrastructure.repository;
 
 import br.santosfyuri.algaworks.algafood.domain.model.Restaurant;
 import br.santosfyuri.algaworks.algafood.domain.repository.RestaurantRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class RestaurantRepositoryImpl implements RestaurantRepository {
@@ -33,8 +35,11 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
 
     @Transactional
     @Override
-    public void delete(Restaurant restaurant) {
-        restaurant = find(restaurant.getId());
+    public void delete(Long id) {
+        Restaurant restaurant = find(id);
+        if (Objects.isNull(restaurant)) {
+            throw new EmptyResultDataAccessException(1);
+        }
         manager.remove(restaurant);
     }
 }
