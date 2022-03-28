@@ -21,7 +21,7 @@ public class StateService {
 
     public void delete(Long id) {
         try {
-            stateRepository.delete(id);
+            stateRepository.deleteById(id);
         } catch (EmptyResultDataAccessException exception) {
             throw new EntityNotFoundException(String.format("Não existe um cadastro de estado com código %d", id));
         } catch (DataIntegrityViolationException exception) {

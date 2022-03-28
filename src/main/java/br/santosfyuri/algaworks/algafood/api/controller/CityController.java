@@ -13,10 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/states")
+@RequestMapping("/cities")
 public class CityController {
 
     @Autowired
@@ -27,16 +27,14 @@ public class CityController {
 
     @GetMapping
     public List<City> list() {
-        return cityRepository.list();
+        return cityRepository.findAll();
     }
 
     @GetMapping(path = "{id}")
     public ResponseEntity<City> find(@PathVariable Long id) {
-        City city = cityRepository.find(id);
-        if (Objects.nonNull(city)) {
-            return ResponseEntity.ok(city);
-        }
-        return ResponseEntity.notFound().build();
+        Optional<City> city = cityRepository.findById(id);
+        return city.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -55,11 +53,11 @@ public class CityController {
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @RequestBody City city) {
         try {
-            City currentCity = cityRepository.find(id);
-            if (Objects.nonNull(currentCity)) {
-                BeanUtils.copyProperties(city, currentCity, "id");
-                currentCity = cityService.save(currentCity);
-                return ResponseEntity.ok(currentCity);
+            Optional<City> currentCity = cityRepository.findById(id);
+            if (currentCity.isPresent()) {
+                BeanUtils.copyProperties(city, currentCity.get(), "id");
+                City citySaved = cityService.save(currentCity.get());
+                return ResponseEntity.ok(citySaved);
             }
             return ResponseEntity.notFound().build();
         } catch (EntityNotFoundException exception) {

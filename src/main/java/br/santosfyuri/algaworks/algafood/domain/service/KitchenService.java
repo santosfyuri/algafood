@@ -21,7 +21,7 @@ public class KitchenService {
 
     public void delete(Long id) {
         try {
-            kitchenRepository.delete(id);
+            kitchenRepository.deleteById(id);
         } catch (EmptyResultDataAccessException exception) {
             throw new EntityNotFoundException(String.format("Não existe um cadastro de cozinha com código %d", id));
         } catch (DataIntegrityViolationException exception) {

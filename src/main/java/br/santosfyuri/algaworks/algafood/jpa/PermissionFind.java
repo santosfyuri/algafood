@@ -16,7 +16,7 @@ public class PermissionFind {
                 .run(args);
 
         PermissionRepository permissionRepository = applicationContext.getBean(PermissionRepository.class);
-        List<Permission> permissions = permissionRepository.list();
+        List<Permission> permissions = permissionRepository.findAll();
         permissions.forEach(r -> {
             System.out.printf("%d - %s\n",
                     r.getId(), r.getName());

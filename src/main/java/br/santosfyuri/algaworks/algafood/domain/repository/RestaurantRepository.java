@@ -1,16 +1,24 @@
 package br.santosfyuri.algaworks.algafood.domain.repository;
 
 import br.santosfyuri.algaworks.algafood.domain.model.Restaurant;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
-public interface RestaurantRepository {
+@Repository
+public interface RestaurantRepository
+        extends CustomJpaRepository<Restaurant, Long>, CustomizedRestaurantRepository,
+        JpaSpecificationExecutor<Restaurant> {
 
-    List<Restaurant> list();
+    List<Restaurant> findByDeliveryFeeBetween(BigDecimal startingFee, BigDecimal finalFee);
 
-    Restaurant find(Long id);
+//    @Query("from Restaurant where name like %:nome% and kitchen.id = :kitchenId")
+    List<Restaurant> findByNameAndKitchenId(String name, Long kitchenId);
 
-    Restaurant save(Restaurant restaurant);
+//    List<Restaurant> findByNameContainingAndKitchenId(String name, Long kitchenId);
 
-    void delete(Long id);
+    Optional<Restaurant> findFirstByNameContaining(String name);
 }

@@ -16,7 +16,7 @@ public class KitchenFind {
                 .run(args);
 
         KitchenRepository kitchenRepository = applicationContext.getBean(KitchenRepository.class);
-        List<Kitchen> kitchens = kitchenRepository.list();
+        List<Kitchen> kitchens = kitchenRepository.findAll();
         kitchens.forEach(r -> {
             System.out.printf("%d - %s\n",
                     r.getId(), r.getName());

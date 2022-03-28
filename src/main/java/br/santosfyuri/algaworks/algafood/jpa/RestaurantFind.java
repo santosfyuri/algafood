@@ -17,7 +17,7 @@ public class RestaurantFind {
                 .run(args);
 
         RestaurantRepository restaurantRepository = applicationContext.getBean(RestaurantRepository.class);
-        List<Restaurant> restaurants = restaurantRepository.list();
+        List<Restaurant> restaurants = restaurantRepository.findAll();
         restaurants.forEach(r -> {
             System.out.printf("%s - %f - %s\n",
                     r.getName(), r.getDeliveryFee(), r.getKitchen().getName());

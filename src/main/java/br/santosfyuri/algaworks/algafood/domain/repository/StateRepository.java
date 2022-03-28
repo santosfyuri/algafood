@@ -1,16 +1,9 @@
 package br.santosfyuri.algaworks.algafood.domain.repository;
 
 import br.santosfyuri.algaworks.algafood.domain.model.State;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
-public interface StateRepository {
-
-    List<State> list();
-
-    State find(Long id);
-
-    State save(State state);
-
-    void delete(Long id);
+@Repository
+public interface StateRepository extends JpaRepository<State, Long> {
 }

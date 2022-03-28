@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/restaurants")
@@ -27,16 +27,14 @@ public class RestaurantController {
 
     @GetMapping
     public List<Restaurant> list() {
-        return restaurantRepository.list();
+        return restaurantRepository.findAll();
     }
 
     @GetMapping(path = "{id}")
     public ResponseEntity<Restaurant> find(@PathVariable Long id) {
-        Restaurant restaurant = restaurantRepository.find(id);
-        if (Objects.nonNull(restaurant)) {
-            return ResponseEntity.ok(restaurant);
-        }
-        return ResponseEntity.notFound().build();
+        Optional<Restaurant> restaurant = restaurantRepository.findById(id);
+        return restaurant.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -45,7 +43,7 @@ public class RestaurantController {
             restaurant = restaurantService.save(restaurant);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(restaurant);
-        } catch(EntityNotFoundException exception) {
+        } catch (EntityNotFoundException exception) {
             return ResponseEntity.badRequest()
                     .body(exception.getMessage());
         }
@@ -55,11 +53,11 @@ public class RestaurantController {
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @RequestBody Restaurant restaurant) {
         try {
-            Restaurant currentRestaurant = restaurantRepository.find(id);
-            if (Objects.nonNull(currentRestaurant)) {
-                BeanUtils.copyProperties(restaurant, currentRestaurant, "id");
-                currentRestaurant = restaurantService.save(currentRestaurant);
-                return ResponseEntity.ok(currentRestaurant);
+            Optional<Restaurant> currentRestaurant = restaurantRepository.findById(id);
+            if (currentRestaurant.isPresent()) {
+                BeanUtils.copyProperties(restaurant, currentRestaurant.get(), "id");
+                Restaurant restaurantSaved = restaurantService.save(currentRestaurant.get());
+                return ResponseEntity.ok(restaurantSaved);
             }
             return ResponseEntity.notFound().build();
         } catch (EntityNotFoundException exception) {

@@ -18,7 +18,7 @@ public class PaymentMethodFind {
                 .run(args);
 
         PaymentMethodRepository paymentMethodRepository = applicationContext.getBean(PaymentMethodRepository.class);
-        List<PaymentMethod> paymentMethods = paymentMethodRepository.list();
+        List<PaymentMethod> paymentMethods = paymentMethodRepository.findAll();
         paymentMethods.forEach(r -> {
             System.out.printf("%d - %s\n",
                     r.getId(), r.getDescription());

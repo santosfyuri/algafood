@@ -16,7 +16,7 @@ public class CityFind {
                 .run(args);
 
         CityRepository cityRepository = applicationContext.getBean(CityRepository.class);
-        List<City> cities = cityRepository.list();
+        List<City> cities = cityRepository.findAll();
         cities.forEach(r -> {
             System.out.printf("%d - %s - %s\n",
                     r.getId(), r.getName(), r.getState().getName());

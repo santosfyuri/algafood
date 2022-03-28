@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/states")
@@ -26,16 +26,13 @@ public class StateController {
 
     @GetMapping
     public List<State> list() {
-        return stateRepository.list();
+        return stateRepository.findAll();
     }
 
     @GetMapping(path = "{id}")
     public ResponseEntity<State> find(@PathVariable Long id) {
-        State state = stateRepository.find(id);
-        if (Objects.nonNull(state)) {
-            return ResponseEntity.ok(state);
-        }
-        return ResponseEntity.notFound().build();
+        Optional<State> state = stateRepository.findById(id);
+        return state.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -54,11 +51,11 @@ public class StateController {
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @RequestBody State state) {
         try {
-            State currentState = stateRepository.find(id);
-            if (Objects.nonNull(currentState)) {
-                BeanUtils.copyProperties(state, currentState, "id");
-                currentState = stateService.save(currentState);
-                return ResponseEntity.ok(currentState);
+            Optional<State> currentState = stateRepository.findById(id);
+            if (currentState.isPresent()) {
+                BeanUtils.copyProperties(state, currentState.get(), "id");
+                State stateSaved = stateService.save(currentState.get());
+                return ResponseEntity.ok(stateSaved);
             }
             return ResponseEntity.notFound().build();
         } catch (EntityNotFoundException exception) {

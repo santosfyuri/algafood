@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/kitchens")
@@ -26,7 +26,14 @@ public class KitchenController {
 
     @GetMapping
     public List<Kitchen> list() {
-        return kitchenRepository.list();
+        return kitchenRepository.findAll();
+    }
+
+    @GetMapping(path = "{id}")
+    public ResponseEntity<Kitchen> find(@PathVariable Long id) {
+        Optional<Kitchen> kitchen = kitchenRepository.findById(id);
+        return kitchen.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -39,11 +46,11 @@ public class KitchenController {
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @RequestBody Kitchen kitchen) {
         try {
-            Kitchen currentKitchen = kitchenRepository.find(id);
-            if (Objects.nonNull(currentKitchen)) {
-                BeanUtils.copyProperties(kitchen, currentKitchen, "id");
-                currentKitchen = kitchenService.save(currentKitchen);
-                return ResponseEntity.ok(currentKitchen);
+            Optional<Kitchen> currentKitchen = kitchenRepository.findById(id);
+            if (currentKitchen.isPresent()) {
+                BeanUtils.copyProperties(kitchen, currentKitchen.get(), "id");
+                Kitchen kitchenSaved = kitchenService.save(currentKitchen.get());
+                return ResponseEntity.ok(kitchenSaved);
             }
             return ResponseEntity.notFound().build();
         } catch (EntityNotFoundException exception) {
