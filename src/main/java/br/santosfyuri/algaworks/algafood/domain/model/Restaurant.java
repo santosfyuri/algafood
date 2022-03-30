@@ -1,12 +1,16 @@
 package br.santosfyuri.algaworks.algafood.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
-import org.hibernate.Hibernate;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 import static br.santosfyuri.algaworks.algafood.domain.constants.DatabaseConstants.SCHEMA;
 
@@ -15,12 +19,14 @@ import static br.santosfyuri.algaworks.algafood.domain.constants.DatabaseConstan
 @Builder(builderClassName = "Builder", builderMethodName = "create")
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "restaurants", schema = SCHEMA)
 @SequenceGenerator(schema = SCHEMA, sequenceName = "seq_restaurants", name = "seq_restaurants",
         initialValue = 1, allocationSize = 1)
 public class Restaurant {
 
+    @EqualsAndHashCode.Include
     @Id
     @Column(name = "id")
     @GeneratedValue(generator = "seq_restaurants", strategy = GenerationType.SEQUENCE)
@@ -32,28 +38,31 @@ public class Restaurant {
     @Column(name = "delivery_fee")
     private BigDecimal deliveryFee;
 
-    @Column(name = "is_active")
+    @Column(name = "active")
     private boolean active;
 
-    @Column(name = "created_at")
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @Embedded
+    private Address address;
+
+    @JsonIgnoreProperties("hibernateLazyInitializer")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "kitchen_id")
     private Kitchen kitchen;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Restaurant that = (Restaurant) o;
-        return id != null && Objects.equals(id, that.id);
-    }
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "restaurants_payments_methods", joinColumns = @JoinColumn(name = "restaurant_id"),
+            inverseJoinColumns = @JoinColumn(name = "payment_method_id"))
+    private List<PaymentMethod> paymentMethods = new ArrayList<>();
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
+    private List<Product> products = new ArrayList<>();
 }

@@ -11,12 +11,14 @@ import static br.santosfyuri.algaworks.algafood.domain.constants.DatabaseConstan
 @Builder(builderClassName = "Builder", builderMethodName = "create")
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "states", schema = SCHEMA)
 @SequenceGenerator(schema = SCHEMA, sequenceName = "seq_states", name = "seq_states",
         initialValue = 1, allocationSize = 1)
 public class State {
 
+    @EqualsAndHashCode.Include
     @Id
     @Column(name = "id")
     @GeneratedValue(generator = "seq_states", strategy = GenerationType.SEQUENCE)
