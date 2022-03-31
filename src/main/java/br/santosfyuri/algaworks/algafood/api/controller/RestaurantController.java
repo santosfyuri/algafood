@@ -1,19 +1,25 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
-import br.santosfyuri.algaworks.algafood.domain.exception.EntityInUseException;
-import br.santosfyuri.algaworks.algafood.domain.exception.EntityNotFoundException;
-import br.santosfyuri.algaworks.algafood.domain.model.Kitchen;
+import br.santosfyuri.algaworks.algafood.domain.exception.BusinessException;
+import br.santosfyuri.algaworks.algafood.domain.exception.KitchenNotFoundException;
 import br.santosfyuri.algaworks.algafood.domain.model.Restaurant;
 import br.santosfyuri.algaworks.algafood.domain.repository.RestaurantRepository;
 import br.santosfyuri.algaworks.algafood.domain.service.RestaurantService;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/restaurants")
@@ -31,51 +37,66 @@ public class RestaurantController {
     }
 
     @GetMapping(path = "{id}")
-    public ResponseEntity<Restaurant> find(@PathVariable Long id) {
-        Optional<Restaurant> restaurant = restaurantRepository.findById(id);
-        return restaurant.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public Restaurant find(@PathVariable Long id) {
+        return restaurantService.findOrNull(id);
     }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody Restaurant restaurant) {
+    public Restaurant save(@RequestBody Restaurant restaurant) {
         try {
-            restaurant = restaurantService.save(restaurant);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(restaurant);
-        } catch (EntityNotFoundException exception) {
-            return ResponseEntity.badRequest()
-                    .body(exception.getMessage());
+            return restaurantService.save(restaurant);
+        } catch (KitchenNotFoundException exception) {
+            throw new BusinessException(exception.getMessage());
         }
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<?> update(@PathVariable Long id,
-                                    @RequestBody Restaurant restaurant) {
+    public Restaurant update(@PathVariable Long id,
+                             @RequestBody Restaurant restaurant) {
         try {
-            Optional<Restaurant> currentRestaurant = restaurantRepository.findById(id);
-            if (currentRestaurant.isPresent()) {
-                BeanUtils.copyProperties(restaurant, currentRestaurant.get(), "id", "paymentMethods",
-                        "address", "createdBy", "products");
-                Restaurant restaurantSaved = restaurantService.save(currentRestaurant.get());
-                return ResponseEntity.ok(restaurantSaved);
-            }
-            return ResponseEntity.notFound().build();
-        } catch (EntityNotFoundException exception) {
-            return ResponseEntity.badRequest()
-                    .body(exception.getMessage());
+            Restaurant currentRestaurant = restaurantService.findOrNull(id);
+            BeanUtils.copyProperties(restaurant, currentRestaurant, "id", "paymentMethods",
+                    "address", "createdBy", "products");
+            return restaurantService.save(currentRestaurant);
+        } catch (KitchenNotFoundException exception) {
+            throw new BusinessException(exception.getMessage());
         }
     }
 
+    @PatchMapping(path = "{id}")
+    public Restaurant atualizarParcial(@PathVariable Long id,
+                                       @RequestBody Map<String, Object> fields, HttpServletRequest request) {
+        Restaurant currentRestaurant = restaurantService.findOrNull(id);
+        merge(fields, currentRestaurant, request);
+        return update(id, currentRestaurant);
+    }
+
     @DeleteMapping(path = "{id}")
-    public ResponseEntity<Kitchen> delete(@PathVariable(value = "id") Long id) {
+    public void delete(@PathVariable(value = "id") Long id) {
+        restaurantService.delete(id);
+    }
+
+    private void merge(Map<String, Object> dataOrigin, Restaurant restaurantDestiny,
+                       HttpServletRequest request) {
+        ServletServerHttpRequest serverHttpRequest = new ServletServerHttpRequest(request);
         try {
-            restaurantService.delete(id);
-            return ResponseEntity.noContent().build();
-        } catch (EntityNotFoundException exception) {
-            return ResponseEntity.notFound().build();
-        } catch (EntityInUseException exception) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, true);
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+
+            Restaurant restaurantOrigin = objectMapper.convertValue(dataOrigin, Restaurant.class);
+
+            dataOrigin.forEach((propertyName, propertyValue) -> {
+                Field field = ReflectionUtils.findField(Restaurant.class, propertyName);
+                Objects.requireNonNull(field).setAccessible(true);
+
+                Object novoValor = ReflectionUtils.getField(field, restaurantOrigin);
+
+                ReflectionUtils.setField(field, restaurantDestiny, novoValor);
+            });
+        } catch (IllegalArgumentException e) {
+            Throwable rootCause = ExceptionUtils.getRootCause(e);
+            throw new HttpMessageNotReadableException(e.getMessage(), rootCause, serverHttpRequest);
         }
     }
 }

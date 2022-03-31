@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Builder(builderClassName = "Builder", builderMethodName = "create")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Embeddable
 public class Address {
 

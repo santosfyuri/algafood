@@ -1,6 +1,5 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
-import br.santosfyuri.algaworks.algafood.domain.exception.EntityInUseException;
 import br.santosfyuri.algaworks.algafood.domain.exception.EntityNotFoundException;
 import br.santosfyuri.algaworks.algafood.domain.model.State;
 import br.santosfyuri.algaworks.algafood.domain.repository.StateRepository;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/states")
@@ -30,9 +28,8 @@ public class StateController {
     }
 
     @GetMapping(path = "{id}")
-    public ResponseEntity<State> find(@PathVariable Long id) {
-        Optional<State> state = stateRepository.findById(id);
-        return state.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public State find(@PathVariable Long id) {
+        return stateService.findOrNull(id);
     }
 
     @PostMapping
@@ -48,31 +45,16 @@ public class StateController {
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<?> update(@PathVariable Long id,
-                                    @RequestBody State state) {
-        try {
-            Optional<State> currentState = stateRepository.findById(id);
-            if (currentState.isPresent()) {
-                BeanUtils.copyProperties(state, currentState.get(), "id");
-                State stateSaved = stateService.save(currentState.get());
-                return ResponseEntity.ok(stateSaved);
-            }
-            return ResponseEntity.notFound().build();
-        } catch (EntityNotFoundException exception) {
-            return ResponseEntity.badRequest()
-                    .body(exception.getMessage());
-        }
+    public State update(@PathVariable Long id,
+                        @RequestBody State state) {
+        State currentState = stateService.findOrNull(id);
+        BeanUtils.copyProperties(state, currentState, "id");
+        return stateService.save(currentState);
     }
 
     @DeleteMapping(path = "{id}")
-    public ResponseEntity<State> delete(@PathVariable(value = "id") Long id) {
-        try {
-            stateService.delete(id);
-            return ResponseEntity.noContent().build();
-        } catch (EntityNotFoundException exception) {
-            return ResponseEntity.notFound().build();
-        } catch (EntityInUseException exception) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable(value = "id") Long id) {
+        stateService.delete(id);
     }
 }

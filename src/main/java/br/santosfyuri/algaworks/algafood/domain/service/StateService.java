@@ -1,7 +1,7 @@
 package br.santosfyuri.algaworks.algafood.domain.service;
 
 import br.santosfyuri.algaworks.algafood.domain.exception.EntityInUseException;
-import br.santosfyuri.algaworks.algafood.domain.exception.EntityNotFoundException;
+import br.santosfyuri.algaworks.algafood.domain.exception.StateNotFoundException;
 import br.santosfyuri.algaworks.algafood.domain.model.State;
 import br.santosfyuri.algaworks.algafood.domain.repository.StateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class StateService {
 
+    private static final String MESSAGE_STATE_IN_USE = "Estado de código %d não pode ser removido, pois está em uso.";
     @Autowired
     private StateRepository stateRepository;
 
@@ -19,13 +20,18 @@ public class StateService {
         return stateRepository.save(state);
     }
 
+    public State findOrNull(Long id) {
+        return stateRepository.findById(id)
+                .orElseThrow(() -> new StateNotFoundException(id));
+    }
+
     public void delete(Long id) {
         try {
             stateRepository.deleteById(id);
         } catch (EmptyResultDataAccessException exception) {
-            throw new EntityNotFoundException(String.format("Não existe um cadastro de estado com código %d", id));
+            throw new StateNotFoundException(id);
         } catch (DataIntegrityViolationException exception) {
-            throw new EntityInUseException(String.format("Estado de código %d não pode ser removido, pois está em uso.", id));
+            throw new EntityInUseException(String.format(MESSAGE_STATE_IN_USE, id));
         }
     }
 }

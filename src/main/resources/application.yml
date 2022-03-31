@@ -15,3 +15,11 @@ spring:
     locations:
       - classpath:db/migration
       - classpath:db/test
+  jackson:
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: true
+      FAIL_ON_IGNORED_PROPERTIES: true
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
