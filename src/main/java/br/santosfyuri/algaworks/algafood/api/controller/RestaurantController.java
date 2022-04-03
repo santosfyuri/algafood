@@ -2,6 +2,7 @@ package br.santosfyuri.algaworks.algafood.api.controller;
 
 import br.santosfyuri.algaworks.algafood.domain.exception.BusinessException;
 import br.santosfyuri.algaworks.algafood.domain.exception.KitchenNotFoundException;
+import br.santosfyuri.algaworks.algafood.domain.exception.ValidationException;
 import br.santosfyuri.algaworks.algafood.domain.model.Restaurant;
 import br.santosfyuri.algaworks.algafood.domain.repository.RestaurantRepository;
 import br.santosfyuri.algaworks.algafood.domain.service.RestaurantService;
@@ -13,9 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +35,9 @@ public class RestaurantController {
     @Autowired
     private RestaurantService restaurantService;
 
+    @Autowired
+    private SmartValidator smartValidator;
+
     @GetMapping
     public List<Restaurant> list() {
         return restaurantRepository.findAll();
@@ -42,7 +49,7 @@ public class RestaurantController {
     }
 
     @PostMapping
-    public Restaurant save(@RequestBody Restaurant restaurant) {
+    public Restaurant save(@RequestBody @Valid Restaurant restaurant) {
         try {
             return restaurantService.save(restaurant);
         } catch (KitchenNotFoundException exception) {
@@ -52,7 +59,7 @@ public class RestaurantController {
 
     @PutMapping(path = "{id}")
     public Restaurant update(@PathVariable Long id,
-                             @RequestBody Restaurant restaurant) {
+                             @RequestBody @Valid Restaurant restaurant) {
         try {
             Restaurant currentRestaurant = restaurantService.findOrNull(id);
             BeanUtils.copyProperties(restaurant, currentRestaurant, "id", "paymentMethods",
@@ -68,6 +75,7 @@ public class RestaurantController {
                                        @RequestBody Map<String, Object> fields, HttpServletRequest request) {
         Restaurant currentRestaurant = restaurantService.findOrNull(id);
         merge(fields, currentRestaurant, request);
+        validate(currentRestaurant);
         return update(id, currentRestaurant);
     }
 
@@ -97,6 +105,16 @@ public class RestaurantController {
         } catch (IllegalArgumentException e) {
             Throwable rootCause = ExceptionUtils.getRootCause(e);
             throw new HttpMessageNotReadableException(e.getMessage(), rootCause, serverHttpRequest);
+        }
+    }
+
+    private void validate(Restaurant restaurant) {
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(restaurant,
+                restaurant.getClass().getSimpleName());
+        smartValidator.validate(restaurant, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException(bindingResult);
         }
     }
 }

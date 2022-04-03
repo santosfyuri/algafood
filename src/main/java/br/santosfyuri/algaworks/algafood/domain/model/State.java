@@ -1,8 +1,11 @@
 package br.santosfyuri.algaworks.algafood.domain.model;
 
+import br.santosfyuri.algaworks.algafood.core.validation.Groups;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import static br.santosfyuri.algaworks.algafood.domain.constants.DatabaseConstants.SCHEMA;
 
@@ -18,12 +21,14 @@ import static br.santosfyuri.algaworks.algafood.domain.constants.DatabaseConstan
         initialValue = 1, allocationSize = 1)
 public class State {
 
+    @NotNull(groups = Groups.StateId.class)
     @EqualsAndHashCode.Include
     @Id
     @Column(name = "id")
     @GeneratedValue(generator = "seq_states", strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @NotBlank
     @Column(name = "name")
     private String name;
 }

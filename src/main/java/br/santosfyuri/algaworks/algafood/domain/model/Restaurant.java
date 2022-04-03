@@ -1,12 +1,17 @@
 package br.santosfyuri.algaworks.algafood.domain.model;
 
+import br.santosfyuri.algaworks.algafood.core.validation.Groups;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.groups.ConvertGroup;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,9 +37,12 @@ public class Restaurant {
     @GeneratedValue(generator = "seq_restaurants", strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @NotBlank
     @Column(name = "name")
     private String name;
 
+    @NotNull
+    @PositiveOrZero
     @Column(name = "delivery_fee")
     private BigDecimal deliveryFee;
 
@@ -52,9 +60,10 @@ public class Restaurant {
     @Embedded
     private Address address;
 
-    @JsonIgnoreProperties("hibernateLazyInitializer")
+    @Valid
+    @ConvertGroup(to = Groups.KitchenId.class)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "kitchen_id")
+    @JoinColumn(name = "kitchen_id", nullable = false)
     private Kitchen kitchen;
 
     @JsonIgnore
