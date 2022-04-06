@@ -5,9 +5,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,16 +47,16 @@ public class Order {
     @CreationTimestamp
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @Column(name = "confirmation_date")
-    private LocalDateTime confirmationDate;
+    private OffsetDateTime confirmationDate;
 
     @Column(name = "cancellation_date")
-    private LocalDateTime cancellationDate;
+    private OffsetDateTime cancellationDate;
 
     @Column(name = "delivery_date")
-    private LocalDateTime deliveryDate;
+    private OffsetDateTime deliveryDate;
 
     @ManyToOne
     @JoinColumn(name = "payment_method_id", nullable = false)
