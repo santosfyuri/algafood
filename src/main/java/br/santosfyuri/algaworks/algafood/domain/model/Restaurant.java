@@ -20,7 +20,6 @@ import java.util.List;
 import static br.santosfyuri.algaworks.algafood.domain.constants.DatabaseConstants.SCHEMA;
 
 @Getter
-@Setter
 @Builder(builderClassName = "Builder", builderMethodName = "create")
 @NoArgsConstructor
 @AllArgsConstructor

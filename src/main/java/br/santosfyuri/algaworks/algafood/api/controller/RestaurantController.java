@@ -1,5 +1,10 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
+import br.santosfyuri.algaworks.algafood.api.assembler.RestaurantInputDisassembler;
+import br.santosfyuri.algaworks.algafood.api.assembler.RestaurantModelAssembler;
+import br.santosfyuri.algaworks.algafood.api.model.RestaurantModel;
+import br.santosfyuri.algaworks.algafood.api.model.input.KitchenIdInput;
+import br.santosfyuri.algaworks.algafood.api.model.input.RestaurantInput;
 import br.santosfyuri.algaworks.algafood.domain.exception.BusinessException;
 import br.santosfyuri.algaworks.algafood.domain.exception.KitchenNotFoundException;
 import br.santosfyuri.algaworks.algafood.domain.exception.ValidationException;
@@ -38,45 +43,65 @@ public class RestaurantController {
     @Autowired
     private SmartValidator smartValidator;
 
+    @Autowired
+    private RestaurantModelAssembler assembler;
+
+    @Autowired
+    private RestaurantInputDisassembler disassembler;
+
     @GetMapping
-    public List<Restaurant> list() {
-        return restaurantRepository.findAll();
+    public List<RestaurantModel> list() {
+        return assembler.toCollectionModel(restaurantRepository.findAll());
     }
 
     @GetMapping(path = "{id}")
-    public Restaurant find(@PathVariable Long id) {
-        return restaurantService.findOrNull(id);
+    public RestaurantModel find(@PathVariable Long id) {
+        Restaurant restaurant = restaurantService.findOrNull(id);
+
+        return assembler.toModel(restaurant);
     }
 
     @PostMapping
-    public Restaurant save(@RequestBody @Valid Restaurant restaurant) {
+    public RestaurantModel save(@RequestBody @Valid RestaurantInput input) {
         try {
-            return restaurantService.save(restaurant);
+            Restaurant restaurant = disassembler.toDomainObject(input);
+            return assembler.toModel(restaurantService.save(restaurant));
         } catch (KitchenNotFoundException exception) {
             throw new BusinessException(exception.getMessage());
         }
     }
 
     @PutMapping(path = "{id}")
-    public Restaurant update(@PathVariable Long id,
-                             @RequestBody @Valid Restaurant restaurant) {
+    public RestaurantModel update(@PathVariable Long id,
+                                  @RequestBody @Valid RestaurantInput input) {
         try {
             Restaurant currentRestaurant = restaurantService.findOrNull(id);
-            BeanUtils.copyProperties(restaurant, currentRestaurant, "id", "paymentMethods",
-                    "address", "createdBy", "products");
-            return restaurantService.save(currentRestaurant);
+            BeanUtils.copyProperties(disassembler.toDomainObject(input), currentRestaurant,
+                    "id", "paymentMethods", "address", "createdBy", "products");
+            return assembler.toModel(restaurantService.save(currentRestaurant));
         } catch (KitchenNotFoundException exception) {
             throw new BusinessException(exception.getMessage());
         }
     }
 
+    @Deprecated
     @PatchMapping(path = "{id}")
-    public Restaurant atualizarParcial(@PathVariable Long id,
-                                       @RequestBody Map<String, Object> fields, HttpServletRequest request) {
+    public RestaurantModel atualizarParcial(@PathVariable Long id,
+                                            @RequestBody Map<String, Object> fields, HttpServletRequest request) {
         Restaurant currentRestaurant = restaurantService.findOrNull(id);
         merge(fields, currentRestaurant, request);
         validate(currentRestaurant);
-        return update(id, currentRestaurant);
+
+        RestaurantInput input = new RestaurantInput();
+        input.setName(currentRestaurant.getName());
+        input.setDeliveryFee(currentRestaurant.getDeliveryFee());
+
+        KitchenIdInput kitchenIdInput = new KitchenIdInput();
+        kitchenIdInput.setId(currentRestaurant.getKitchen().getId());
+
+        input.setKitchen(kitchenIdInput);
+
+        return update(id, input);
     }
 
     @DeleteMapping(path = "{id}")

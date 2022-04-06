@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RestaurantService {
@@ -26,6 +27,7 @@ public class RestaurantService {
                 .orElseThrow(() -> new RestaurantNotFoundException(id));
     }
 
+    @Transactional
     public Restaurant save(Restaurant restaurant) {
         Kitchen kitchen = kitchenService.findOrNull(restaurant.getKitchen().getId());
         restaurant.setKitchen(kitchen);

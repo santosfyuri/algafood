@@ -11,6 +11,6 @@ public class RestaurantModel {
 
     private Long id;
     private String name;
-    private BigDecimal shippingFee;
+    private BigDecimal deliveryFee;
     private KitchenModel kitchen;
 }
