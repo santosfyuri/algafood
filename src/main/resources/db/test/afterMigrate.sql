@@ -1,3 +1,4 @@
+DELETE FROM public.restaurants;
 DELETE FROM public.cities;
 DELETE FROM public.states;
 DELETE FROM public.kitchens;
@@ -5,6 +6,7 @@ DELETE FROM public.kitchens;
 SELECT setval('seq_states', 1, FALSE);
 SELECT setval('seq_cities', 1, FALSE);
 SELECT setval('seq_kitchens', 1, FALSE);
+SELECT setval('seq_restaurants', 1, FALSE);
 
 INSERT INTO public.states(id, name) VALUES (nextval('seq_states'), 'Minas Gerais');
 INSERT INTO public.states(id, name) VALUES (nextval('seq_states'), 'São Paulo');

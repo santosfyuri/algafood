@@ -14,7 +14,6 @@ import br.santosfyuri.algaworks.algafood.domain.service.RestaurantService;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -76,8 +75,7 @@ public class RestaurantController {
                                   @RequestBody @Valid RestaurantInput input) {
         try {
             Restaurant currentRestaurant = restaurantService.findOrNull(id);
-            BeanUtils.copyProperties(disassembler.toDomainObject(input), currentRestaurant,
-                    "id", "paymentMethods", "address", "createdBy", "products");
+            disassembler.copyToDomainObject(input, currentRestaurant);
             return assembler.toModel(restaurantService.save(currentRestaurant));
         } catch (KitchenNotFoundException exception) {
             throw new BusinessException(exception.getMessage());

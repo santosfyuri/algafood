@@ -5,7 +5,8 @@ import lombok.*;
 import javax.persistence.*;
 
 @Getter
-@Builder(builderClassName = "Builder", builderMethodName = "create")
+@Setter
+@Builder(builderClassName = "Builder", builderMethodName = "create", toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
@@ -27,6 +28,6 @@ public class Address {
     private String district;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_city")
+    @JoinColumn(name = "address_city_id")
     private City city;
 }

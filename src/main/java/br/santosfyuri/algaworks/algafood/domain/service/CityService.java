@@ -30,13 +30,15 @@ public class CityService {
     @Transactional
     public City save(City city) {
         State state = stateService.findOrNull(city.getState().getId());
-        city.setState(state);
+        city = city.toBuilder().state(state).build();
         return cityRepository.save(city);
     }
 
+    @Transactional
     public void delete(Long id) {
         try {
             cityRepository.deleteById(id);
+            cityRepository.flush();
         } catch (EmptyResultDataAccessException exception) {
             throw new CityNotFoundException(id);
         } catch (DataIntegrityViolationException exception) {

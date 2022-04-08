@@ -28,9 +28,11 @@ public class KitchenService {
                 .orElseThrow(() -> new KitchenNotFoundException(id));
     }
 
+    @Transactional
     public void delete(Long id) {
         try {
             kitchenRepository.deleteById(id);
+            kitchenRepository.flush();
         } catch (EmptyResultDataAccessException exception) {
             throw new KitchenNotFoundException(id);
         } catch (DataIntegrityViolationException exception) {

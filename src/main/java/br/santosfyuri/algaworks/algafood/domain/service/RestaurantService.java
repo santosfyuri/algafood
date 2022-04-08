@@ -30,13 +30,15 @@ public class RestaurantService {
     @Transactional
     public Restaurant save(Restaurant restaurant) {
         Kitchen kitchen = kitchenService.findOrNull(restaurant.getKitchen().getId());
-        restaurant.setKitchen(kitchen);
+        restaurant = restaurant.toBuilder().kitchen(kitchen).build();
         return restaurantRepository.save(restaurant);
     }
 
+    @Transactional
     public void delete(Long id) {
         try {
             restaurantRepository.deleteById(id);
+            restaurantRepository.flush();
         } catch (EmptyResultDataAccessException exception) {
             throw new RestaurantNotFoundException(id);
         } catch (DataIntegrityViolationException exception) {

@@ -10,7 +10,7 @@ import static br.santosfyuri.algaworks.algafood.domain.constants.DatabaseConstan
 
 @Getter
 @Setter
-@Builder(builderClassName = "Builder", builderMethodName = "create")
+@Builder(builderClassName = "Builder", builderMethodName = "create", toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)

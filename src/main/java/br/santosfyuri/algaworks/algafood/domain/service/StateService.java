@@ -28,9 +28,11 @@ public class StateService {
                 .orElseThrow(() -> new StateNotFoundException(id));
     }
 
+    @Transactional
     public void delete(Long id) {
         try {
             stateRepository.deleteById(id);
+            stateRepository.flush();
         } catch (EmptyResultDataAccessException exception) {
             throw new StateNotFoundException(id);
         } catch (DataIntegrityViolationException exception) {
