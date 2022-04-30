@@ -1,12 +1,13 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
-import br.santosfyuri.algaworks.algafood.api.assembler.RestaurantInputDisassembler;
-import br.santosfyuri.algaworks.algafood.api.assembler.RestaurantModelAssembler;
-import br.santosfyuri.algaworks.algafood.api.model.RestaurantModel;
-import br.santosfyuri.algaworks.algafood.api.model.input.KitchenIdInput;
-import br.santosfyuri.algaworks.algafood.api.model.input.RestaurantInput;
+import br.santosfyuri.algaworks.algafood.api.assembler.BasicAssembler;
+import br.santosfyuri.algaworks.algafood.api.assembler.BasicDisassembler;
+import br.santosfyuri.algaworks.algafood.api.representation.request.KitchenIdRequest;
+import br.santosfyuri.algaworks.algafood.api.representation.request.RestaurantRequest;
+import br.santosfyuri.algaworks.algafood.api.representation.response.RestaurantResponse;
 import br.santosfyuri.algaworks.algafood.domain.exception.BusinessException;
 import br.santosfyuri.algaworks.algafood.domain.exception.KitchenNotFoundException;
+import br.santosfyuri.algaworks.algafood.domain.exception.RestaurantNotFoundException;
 import br.santosfyuri.algaworks.algafood.domain.exception.ValidationException;
 import br.santosfyuri.algaworks.algafood.domain.model.Restaurant;
 import br.santosfyuri.algaworks.algafood.domain.repository.RestaurantRepository;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.ReflectionUtils;
@@ -43,63 +45,106 @@ public class RestaurantController {
     private SmartValidator smartValidator;
 
     @Autowired
-    private RestaurantModelAssembler assembler;
+    private BasicAssembler assembler;
 
     @Autowired
-    private RestaurantInputDisassembler disassembler;
+    private BasicDisassembler disassembler;
 
     @GetMapping
-    public List<RestaurantModel> list() {
-        return assembler.toCollectionModel(restaurantRepository.findAll());
+    public List<RestaurantResponse> list() {
+        return assembler.<Restaurant, RestaurantResponse>get(RestaurantResponse.class)
+                .entityToRepresentation(restaurantRepository.findAll());
     }
 
     @GetMapping(path = "{id}")
-    public RestaurantModel find(@PathVariable Long id) {
-        Restaurant restaurant = restaurantService.findOrNull(id);
-
-        return assembler.toModel(restaurant);
+    public RestaurantResponse find(@PathVariable Long id) {
+        return assembler.<Restaurant, RestaurantResponse>get(RestaurantResponse.class)
+                .entityToRepresentation(restaurantService.findOrNull(id));
     }
 
     @PostMapping
-    public RestaurantModel save(@RequestBody @Valid RestaurantInput input) {
+    public RestaurantResponse save(@RequestBody @Valid RestaurantRequest input) {
         try {
-            Restaurant restaurant = disassembler.toDomainObject(input);
-            return assembler.toModel(restaurantService.save(restaurant));
-        } catch (KitchenNotFoundException exception) {
+            Restaurant restaurant = disassembler.<Restaurant, RestaurantRequest>get(Restaurant.class)
+                    .representationToEntity(input);
+            return assembler.<Restaurant, RestaurantResponse>get(RestaurantResponse.class)
+                    .entityToRepresentation(restaurantService.save(restaurant));
+        } catch (KitchenNotFoundException | RestaurantNotFoundException exception) {
             throw new BusinessException(exception.getMessage());
         }
     }
 
     @PutMapping(path = "{id}")
-    public RestaurantModel update(@PathVariable Long id,
-                                  @RequestBody @Valid RestaurantInput input) {
+    public RestaurantResponse update(@PathVariable Long id,
+                                     @RequestBody @Valid RestaurantRequest input) {
         try {
             Restaurant currentRestaurant = restaurantService.findOrNull(id);
-            disassembler.copyToDomainObject(input, currentRestaurant);
-            return assembler.toModel(restaurantService.save(currentRestaurant));
-        } catch (KitchenNotFoundException exception) {
+            disassembler.<Restaurant, RestaurantRequest>get(Restaurant.class).copyToEntity(input, currentRestaurant);
+            return assembler.<Restaurant, RestaurantResponse>get(RestaurantResponse.class)
+                    .entityToRepresentation(restaurantService.save(currentRestaurant));
+        } catch (KitchenNotFoundException | RestaurantNotFoundException exception) {
             throw new BusinessException(exception.getMessage());
         }
     }
 
     @Deprecated
     @PatchMapping(path = "{id}")
-    public RestaurantModel atualizarParcial(@PathVariable Long id,
-                                            @RequestBody Map<String, Object> fields, HttpServletRequest request) {
+    public RestaurantResponse atualizarParcial(@PathVariable Long id,
+                                               @RequestBody Map<String, Object> fields, HttpServletRequest request) {
         Restaurant currentRestaurant = restaurantService.findOrNull(id);
         merge(fields, currentRestaurant, request);
         validate(currentRestaurant);
 
-        RestaurantInput input = new RestaurantInput();
+        RestaurantRequest input = new RestaurantRequest();
         input.setName(currentRestaurant.getName());
         input.setDeliveryFee(currentRestaurant.getDeliveryFee());
 
-        KitchenIdInput kitchenIdInput = new KitchenIdInput();
+        KitchenIdRequest kitchenIdInput = new KitchenIdRequest();
         kitchenIdInput.setId(currentRestaurant.getKitchen().getId());
 
         input.setKitchen(kitchenIdInput);
 
         return update(id, input);
+    }
+
+    @PutMapping("/{restaurantId}/opening")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void abrir(@PathVariable Long restauranteId) {
+        restaurantService.open(restauranteId);
+    }
+
+    @PutMapping("/{restauranteId}/closing")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void fechar(@PathVariable Long restauranteId) {
+        restaurantService.close(restauranteId);
+    }
+
+    @PutMapping("/{restaurantId}/active")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void activate(@PathVariable Long restauranteId) {
+        restaurantService.active(restauranteId);
+    }
+
+    @DeleteMapping("/{restauranteId}/inactive")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void inactivate(@PathVariable Long restauranteId) {
+        restaurantService.inactive(restauranteId);
+    }
+
+    @PutMapping("activations")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void activations(@RequestBody List<Long> restauranteIds) {
+        restaurantService.active(restauranteIds);
+    }
+
+    @DeleteMapping("/inactivations")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void inactivations(@RequestBody List<Long> restauranteIds) {
+        try {
+            restaurantService.inactive(restauranteIds);
+        } catch (RestaurantNotFoundException exception) {
+            throw new BusinessException(exception.getMessage(), exception);
+        }
     }
 
     @DeleteMapping(path = "{id}")

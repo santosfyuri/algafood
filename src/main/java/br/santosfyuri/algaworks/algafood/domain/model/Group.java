@@ -3,8 +3,8 @@ package br.santosfyuri.algaworks.algafood.domain.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import static br.santosfyuri.algaworks.algafood.domain.constants.DatabaseConstants.SCHEMA;
 
@@ -32,5 +32,13 @@ public class Group {
     @ManyToMany
     @JoinTable(name = "groups_permissions", joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
-    private List<Permission> permissions = new ArrayList<>();
+    private Set<Permission> permissions = new HashSet<>();
+
+    public boolean removePermission(Permission permission) {
+        return getPermissions().remove(permission);
+    }
+
+    public boolean addPermission(Permission permission) {
+        return getPermissions().add(permission);
+    }
 }

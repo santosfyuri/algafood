@@ -4,10 +4,11 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static br.santosfyuri.algaworks.algafood.domain.constants.DatabaseConstants.SCHEMA;
 
@@ -44,5 +45,21 @@ public class User {
     @ManyToMany
     @JoinTable(name = "users_groups", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "group_id"))
-    private List<Group> grupos = new ArrayList<>();
+    private Set<Group> groups = new HashSet<>();
+
+    public boolean samePassword(String password) {
+        return getPassword().equals(password);
+    }
+
+    public boolean differentPassword(String password) {
+        return !samePassword(password);
+    }
+
+    public boolean removeGroup(Group group) {
+        return getGroups().remove(group);
+    }
+
+    public boolean addGroup(Group group) {
+        return getGroups().add(group);
+    }
 }

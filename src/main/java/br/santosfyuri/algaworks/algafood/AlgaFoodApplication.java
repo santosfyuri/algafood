@@ -15,5 +15,4 @@ public class AlgaFoodApplication {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         SpringApplication.run(AlgaFoodApplication.class, args);
     }
-
 }

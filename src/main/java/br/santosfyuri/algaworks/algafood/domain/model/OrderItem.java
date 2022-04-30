@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import static br.santosfyuri.algaworks.algafood.domain.constants.DatabaseConstants.SCHEMA;
 
 @Getter
+@Setter
 @Builder(builderClassName = "Builder", builderMethodName = "create", toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -43,4 +44,19 @@ public class OrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
+    public void calculateTotalPrice() {
+        BigDecimal unitPrice = this.getUnitPrice();
+        Integer quantity = this.getQuantity();
+
+        if (unitPrice == null) {
+            unitPrice = BigDecimal.ZERO;
+        }
+
+        if (quantity == null) {
+            quantity = 0;
+        }
+
+        this.setTotalPrice(unitPrice.multiply(new BigDecimal(quantity)));
+    }
 }

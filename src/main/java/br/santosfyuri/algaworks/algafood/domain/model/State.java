@@ -1,6 +1,6 @@
 package br.santosfyuri.algaworks.algafood.domain.model;
 
-import br.santosfyuri.algaworks.algafood.core.validation.Groups;
+import br.santosfyuri.algaworks.algafood.domain.validation.Groups;
 import lombok.*;
 
 import javax.persistence.*;

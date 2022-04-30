@@ -7,6 +7,7 @@ import javax.persistence.*;
 import static br.santosfyuri.algaworks.algafood.domain.constants.DatabaseConstants.SCHEMA;
 
 @Getter
+@Setter
 @Builder(builderClassName = "Builder", builderMethodName = "create", toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor

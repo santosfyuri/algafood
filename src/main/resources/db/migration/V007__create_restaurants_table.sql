@@ -10,9 +10,9 @@ CREATE TABLE public.restaurants
     address_cep varchar(9) NOT NULL,
     address_street varchar(100) NOT NULL,
     address_number varchar(20) NOT NULL,
-    address_complement varchar(60) null,
+    address_complement varchar(60),
     address_district varchar(60) NOT NULL,
-    active boolean NOT NULL,
+    active boolean NOT NULL DEFAULT TRUE,
     PRIMARY KEY (id)
 );
 
