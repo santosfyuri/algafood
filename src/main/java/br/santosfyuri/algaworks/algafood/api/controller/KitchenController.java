@@ -1,10 +1,16 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
+import br.santosfyuri.algaworks.algafood.api.assembler.BasicAssembler;
+import br.santosfyuri.algaworks.algafood.api.assembler.BasicDisassembler;
+import br.santosfyuri.algaworks.algafood.api.representation.request.KitchenRequest;
+import br.santosfyuri.algaworks.algafood.api.representation.response.KitchenResponse;
 import br.santosfyuri.algaworks.algafood.domain.model.Kitchen;
 import br.santosfyuri.algaworks.algafood.domain.repository.KitchenRepository;
 import br.santosfyuri.algaworks.algafood.domain.service.KitchenService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,28 +27,41 @@ public class KitchenController {
     @Autowired
     private KitchenService kitchenService;
 
+    @Autowired
+    private BasicAssembler assembler;
+
+    @Autowired
+    private BasicDisassembler disassembler;
+
     @GetMapping
-    public List<Kitchen> list() {
-        return kitchenRepository.findAll();
+    public Page<KitchenResponse> list(Pageable pageable) {
+        Page<Kitchen> kitchensPage = kitchenRepository.findAll(pageable);
+        List<KitchenResponse> kitchens = assembler.<Kitchen, KitchenResponse>get(KitchenResponse.class)
+                .entityToRepresentation(kitchensPage.getContent());
+        return new PageImpl<>(kitchens, pageable, kitchensPage.getTotalElements());
     }
 
     @GetMapping(path = "{id}")
-    public Kitchen find(@PathVariable Long id) {
-        return kitchenService.findOrNull(id);
+    public KitchenResponse find(@PathVariable Long id) {
+        return assembler.<Kitchen, KitchenResponse>get(KitchenResponse.class)
+                .entityToRepresentation(kitchenService.findOrNull(id));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Kitchen save(@RequestBody @Valid Kitchen kitchen) {
-        return kitchenService.save(kitchen);
+    public KitchenResponse save(@RequestBody @Valid KitchenRequest kitchenRequest) {
+        Kitchen kitchen = disassembler.<Kitchen, KitchenRequest>get(Kitchen.class).representationToEntity(kitchenRequest);
+        return assembler.<Kitchen, KitchenResponse>get(KitchenResponse.class)
+                .entityToRepresentation(kitchenService.save(kitchen));
     }
 
     @PutMapping(path = "{id}")
-    public Kitchen update(@PathVariable Long id,
-                          @RequestBody @Valid Kitchen kitchen) {
+    public KitchenResponse update(@PathVariable Long id,
+                                  @RequestBody @Valid KitchenRequest kitchenRequest) {
         Kitchen currentKitchen = kitchenService.findOrNull(id);
-        BeanUtils.copyProperties(kitchen, currentKitchen, "id");
-        return kitchenService.save(currentKitchen);
+        disassembler.<Kitchen, KitchenRequest>get(Kitchen.class).copyToEntity(kitchenRequest, currentKitchen);
+        return assembler.<Kitchen, KitchenResponse>get(KitchenResponse.class)
+                .entityToRepresentation(kitchenService.save(currentKitchen));
     }
 
     @DeleteMapping(path = "{id}")

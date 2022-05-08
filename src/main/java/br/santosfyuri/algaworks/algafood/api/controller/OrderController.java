@@ -10,8 +10,14 @@ import br.santosfyuri.algaworks.algafood.domain.exception.EntityNotFoundExceptio
 import br.santosfyuri.algaworks.algafood.domain.model.Order;
 import br.santosfyuri.algaworks.algafood.domain.model.User;
 import br.santosfyuri.algaworks.algafood.domain.repository.OrderRepository;
+import br.santosfyuri.algaworks.algafood.domain.filter.OrderFilter;
 import br.santosfyuri.algaworks.algafood.domain.service.OrderService;
+import br.santosfyuri.algaworks.algafood.infrastructure.repository.spec.OrderSpecs;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,9 +41,11 @@ public class OrderController {
     private BasicDisassembler disassembler;
 
     @GetMapping
-    public List<OrderResumeResponse> list() {
-        List<Order> orders = orderRepository.findAll();
-        return assembler.<Order, OrderResumeResponse>get(OrderResumeResponse.class).entityToRepresentation(orders);
+    public Page<OrderResumeResponse> search(OrderFilter orderFilter, @PageableDefault(size = 10) Pageable pageable) {
+        Page<Order> ordersPage = orderRepository.findAll(OrderSpecs.usingFilter(orderFilter), pageable);
+        List<OrderResumeResponse> ordersResume = assembler.<Order, OrderResumeResponse>get(OrderResumeResponse.class)
+                .entityToRepresentation(ordersPage.getContent());
+        return new PageImpl<>(ordersResume, pageable, ordersPage.getTotalElements());
     }
 
     @GetMapping("/{orderCode}")
