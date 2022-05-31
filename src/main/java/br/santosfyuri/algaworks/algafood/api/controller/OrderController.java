@@ -7,10 +7,10 @@ import br.santosfyuri.algaworks.algafood.api.representation.response.OrderRespon
 import br.santosfyuri.algaworks.algafood.api.representation.response.OrderResumeResponse;
 import br.santosfyuri.algaworks.algafood.domain.exception.BusinessException;
 import br.santosfyuri.algaworks.algafood.domain.exception.EntityNotFoundException;
+import br.santosfyuri.algaworks.algafood.domain.filter.OrderFilter;
 import br.santosfyuri.algaworks.algafood.domain.model.Order;
 import br.santosfyuri.algaworks.algafood.domain.model.User;
 import br.santosfyuri.algaworks.algafood.domain.repository.OrderRepository;
-import br.santosfyuri.algaworks.algafood.domain.filter.OrderFilter;
 import br.santosfyuri.algaworks.algafood.domain.service.OrderService;
 import br.santosfyuri.algaworks.algafood.infrastructure.repository.spec.OrderSpecs;
 import org.springframework.beans.factory.annotation.Autowired;

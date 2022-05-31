@@ -18,6 +18,7 @@ public final class BasicAssembler {
 
     @Autowired
     private ModelMapper modelMapper;
+
     @SuppressWarnings("unchecked")
     public <E, R> GenericAssembler<E, R> get(Class<R> entityType) {
         if (CACHE.containsKey(entityType)) {

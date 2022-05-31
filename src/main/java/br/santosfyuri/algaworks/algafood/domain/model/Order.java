@@ -1,9 +1,12 @@
 package br.santosfyuri.algaworks.algafood.domain.model;
 
 import br.santosfyuri.algaworks.algafood.domain.enums.OrderStatus;
+import br.santosfyuri.algaworks.algafood.domain.event.CanceledOrderEvent;
+import br.santosfyuri.algaworks.algafood.domain.event.ConfirmedOrderEvent;
 import br.santosfyuri.algaworks.algafood.domain.exception.BusinessException;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -19,12 +22,12 @@ import static br.santosfyuri.algaworks.algafood.domain.constants.DatabaseConstan
 @Builder(builderClassName = "Builder", builderMethodName = "create", toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @Entity
 @Table(name = "orders", schema = SCHEMA)
 @SequenceGenerator(schema = SCHEMA, sequenceName = "seq_orders", name = "seq_orders",
         initialValue = 1, allocationSize = 1)
-public class Order {
+public class Order extends AbstractAggregateRoot<Order> {
 
     @EqualsAndHashCode.Include
     @Id
@@ -100,11 +103,13 @@ public class Order {
     public void confirm() {
         setStatus(OrderStatus.CONFIRMADO);
         setConfirmationDate(OffsetDateTime.now());
+        registerEvent(new ConfirmedOrderEvent(this));
     }
 
     public void cancel() {
         setStatus(OrderStatus.CANCELADO);
         setCancellationDate(OffsetDateTime.now());
+        registerEvent(new CanceledOrderEvent(this));
     }
 
     public void deliver() {

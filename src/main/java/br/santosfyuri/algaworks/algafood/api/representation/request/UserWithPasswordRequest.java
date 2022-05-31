@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserWithPasswordRequest extends UserRequest{
+public class UserWithPasswordRequest extends UserRequest {
 
     private Long id;
     private String name;

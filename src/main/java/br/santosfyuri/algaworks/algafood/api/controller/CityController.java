@@ -1,7 +1,6 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
 import br.santosfyuri.algaworks.algafood.domain.exception.BusinessException;
-import br.santosfyuri.algaworks.algafood.domain.exception.EntityNotFoundException;
 import br.santosfyuri.algaworks.algafood.domain.exception.StateNotFoundException;
 import br.santosfyuri.algaworks.algafood.domain.model.City;
 import br.santosfyuri.algaworks.algafood.domain.repository.CityRepository;
@@ -9,7 +8,6 @@ import br.santosfyuri.algaworks.algafood.domain.service.CityService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;

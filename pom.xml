@@ -14,6 +14,12 @@
     <name>AlgaFood</name>
     <description>Development of an iFood-based API for Algaworks ESR training</description>
     <properties>
+        <aws-java-sdk-s3.version>1.12.225</aws-java-sdk-s3.version>
+        <jasperreports-functions.version>6.19.1</jasperreports-functions.version>
+        <jasperreports.version>6.19.1</jasperreports.version>
+        <commons-io.version>2.11.0</commons-io.version>
+        <modelmapper.version>3.1.0</modelmapper.version>
+        <lombok.version>1.18.24</lombok.version>
         <java.version>11</java.version>
     </properties>
     <dependencies>
@@ -47,7 +53,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -66,22 +72,35 @@
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
-            <version>3.0.0</version>
+            <version>${modelmapper.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.11.0</version>
+            <version>${commons-io.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.19.1</version>
+            <version>${jasperreports.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports-functions</artifactId>
-            <version>6.19.1</version>
+            <version>${jasperreports-functions.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>${aws-java-sdk-s3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
         </dependency>
     </dependencies>
 

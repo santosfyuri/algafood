@@ -1,7 +1,6 @@
 package br.santosfyuri.algaworks.algafood.jpa;
 
 import br.santosfyuri.algaworks.algafood.AlgaFoodApplication;
-import br.santosfyuri.algaworks.algafood.domain.model.Kitchen;
 import br.santosfyuri.algaworks.algafood.domain.model.Restaurant;
 import br.santosfyuri.algaworks.algafood.domain.repository.RestaurantRepository;
 import org.springframework.boot.WebApplicationType;

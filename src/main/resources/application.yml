@@ -23,3 +23,27 @@ spring:
     throw-exception-if-no-handler-found: true
   resources:
     add-mappings: false
+  mail:
+    host: SMTP
+    port: PORT
+    username: USERNAME
+    password: PASSWORD
+  freemarker:
+    settings:
+      locale: pt_BR
+algafood:
+  storage:
+    type: LOCAL
+    local:
+      directory: /photos
+    s3:
+      id-access-key: ID_ACCESS_KEY
+      secret-access-key: SECRET_ACCESS_KEY
+      bucket: BUCKET
+      region: REGION
+      directory: DIRECTORY
+  email:
+    sender: SENDER
+    impl: FAKE
+    sandbox:
+      recipient: EMAIL_RECIPIENT

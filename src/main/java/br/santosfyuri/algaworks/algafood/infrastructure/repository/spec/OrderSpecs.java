@@ -1,7 +1,7 @@
 package br.santosfyuri.algaworks.algafood.infrastructure.repository.spec;
 
-import br.santosfyuri.algaworks.algafood.domain.model.Order;
 import br.santosfyuri.algaworks.algafood.domain.filter.OrderFilter;
+import br.santosfyuri.algaworks.algafood.domain.model.Order;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Predicate;

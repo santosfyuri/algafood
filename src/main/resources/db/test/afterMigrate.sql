@@ -13,6 +13,7 @@ DELETE FROM public.payment_methods;
 DELETE FROM public.groups;
 DELETE FROM public.permissions;
 DELETE FROM public.users;
+DELETE FROM public.product_photos;
 
 SELECT setval('seq_cities', 1, FALSE);
 SELECT setval('seq_states', 1, FALSE);
