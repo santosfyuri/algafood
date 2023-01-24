@@ -14,6 +14,7 @@
     <name>AlgaFood</name>
     <description>Development of an iFood-based API for Algaworks ESR training</description>
     <properties>
+        <springdoc-openapi-ui.version>1.6.9</springdoc-openapi-ui.version>
         <aws-java-sdk-s3.version>1.12.225</aws-java-sdk-s3.version>
         <jasperreports-functions.version>6.19.1</jasperreports-functions.version>
         <jasperreports.version>6.19.1</jasperreports.version>
@@ -101,6 +102,26 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc-openapi-ui.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-hateoas</artifactId>
+            <version>${springdoc-openapi-ui.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-data-rest</artifactId>
+            <version>${springdoc-openapi-ui.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
         </dependency>
     </dependencies>
 

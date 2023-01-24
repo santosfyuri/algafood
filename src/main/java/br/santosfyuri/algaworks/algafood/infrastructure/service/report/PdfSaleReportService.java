@@ -10,6 +10,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+@Service
 public class PdfSaleReportService implements SaleReportService {
 
     @Autowired

@@ -38,7 +38,7 @@ import static com.fasterxml.jackson.databind.JsonMappingException.Reference;
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final String ERROR_MESSAGE_END_USER = "Ocorreu um erro interno inesperado no sistema. " +
-            "Teste novamente e se o problema persistir, entre em contato com o administrador do sistema.";
+            "Tente novamente e se o problema persistir, entre em contato com o administrador do sistema.";
 
     @Autowired
     private MessageSource messageSource;

@@ -2,6 +2,7 @@ package br.santosfyuri.algaworks.algafood.api.controller;
 
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicAssembler;
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicDisassembler;
+import br.santosfyuri.algaworks.algafood.api.openapi.controller.GroupControllerOpenApi;
 import br.santosfyuri.algaworks.algafood.api.representation.request.GroupRequest;
 import br.santosfyuri.algaworks.algafood.api.representation.response.GroupResponse;
 import br.santosfyuri.algaworks.algafood.domain.model.Group;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/groups")
-public class GroupController {
+public class GroupControllerController implements GroupControllerOpenApi {
 
     @Autowired
     private GroupRepository groupRepository;

@@ -1,10 +1,13 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
-import br.santosfyuri.algaworks.algafood.domain.exception.EntityNotFoundException;
+import br.santosfyuri.algaworks.algafood.api.assembler.BasicAssembler;
+import br.santosfyuri.algaworks.algafood.api.assembler.BasicDisassembler;
+import br.santosfyuri.algaworks.algafood.api.openapi.controller.StateControllerOpenApi;
+import br.santosfyuri.algaworks.algafood.api.representation.request.StateRequest;
+import br.santosfyuri.algaworks.algafood.api.representation.response.StateResponse;
 import br.santosfyuri.algaworks.algafood.domain.model.State;
 import br.santosfyuri.algaworks.algafood.domain.repository.StateRepository;
 import br.santosfyuri.algaworks.algafood.domain.service.StateService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/states")
-public class StateController {
+public class StateController implements StateControllerOpenApi {
 
     @Autowired
     private StateRepository stateRepository;
@@ -23,39 +26,45 @@ public class StateController {
     @Autowired
     private StateService stateService;
 
+    @Autowired
+    private BasicAssembler assembler;
+
+    @Autowired
+    private BasicDisassembler disassembler;
+
     @GetMapping
-    public List<State> list() {
-        return stateRepository.findAll();
+    public List<StateResponse> list() {
+        return assembler.<State, StateResponse>get(StateResponse.class)
+                .entityToRepresentation(stateRepository.findAll());
     }
 
     @GetMapping(path = "{id}")
-    public State find(@PathVariable Long id) {
-        return stateService.findOrNull(id);
+    public StateResponse find(@PathVariable Long id) {
+        return assembler.<State, StateResponse>get(StateResponse.class)
+                .entityToRepresentation(stateService.findOrNull(id));
     }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody @Valid State state) {
-        try {
-            state = stateService.save(state);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(state);
-        } catch (EntityNotFoundException exception) {
-            return ResponseEntity.badRequest()
-                    .body(exception.getMessage());
-        }
+    public StateResponse save(@RequestBody @Valid StateRequest input) {
+        State state = disassembler.<State, StateRequest>get(State.class)
+                .representationToEntity(input);
+        return assembler.<State, StateResponse>get(StateResponse.class)
+                .entityToRepresentation(stateService.save(state));
     }
 
     @PutMapping(path = "{id}")
-    public State update(@PathVariable Long id,
-                        @RequestBody @Valid State state) {
+    public StateResponse update(@PathVariable Long id,
+                                @RequestBody @Valid StateRequest input) {
         State currentState = stateService.findOrNull(id);
-        BeanUtils.copyProperties(state, currentState, "id");
-        return stateService.save(currentState);
+        disassembler.<State, StateRequest>get(State.class).copyToEntity(input, currentState);
+        return assembler.<State, StateResponse>get(StateResponse.class)
+                .entityToRepresentation(stateService.save(currentState));
     }
 
     @DeleteMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable(value = "id") Long id) {
         stateService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

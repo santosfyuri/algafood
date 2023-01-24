@@ -1,8 +1,11 @@
 package br.santosfyuri.algaworks.algafood.domain.model;
 
 import lombok.*;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+
+import java.time.OffsetDateTime;
 
 import static br.santosfyuri.algaworks.algafood.domain.constants.DatabaseConstants.SCHEMA;
 
@@ -26,4 +29,8 @@ public class PaymentMethod {
 
     @Column(name = "description")
     private String description;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
 }

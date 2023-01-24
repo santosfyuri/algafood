@@ -2,6 +2,7 @@ package br.santosfyuri.algaworks.algafood.api.controller;
 
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicAssembler;
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicDisassembler;
+import br.santosfyuri.algaworks.algafood.api.openapi.controller.RestaurantControllerOpenApi;
 import br.santosfyuri.algaworks.algafood.api.representation.request.KitchenIdRequest;
 import br.santosfyuri.algaworks.algafood.api.representation.request.RestaurantRequest;
 import br.santosfyuri.algaworks.algafood.api.representation.response.RestaurantResponse;
@@ -33,7 +34,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/restaurants")
-public class RestaurantController {
+public class RestaurantController implements RestaurantControllerOpenApi {
 
     @Autowired
     private RestaurantRepository restaurantRepository;

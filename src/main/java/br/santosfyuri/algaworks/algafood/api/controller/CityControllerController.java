@@ -1,21 +1,25 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
+import br.santosfyuri.algaworks.algafood.api.openapi.controller.CityControllerOpenApi;
 import br.santosfyuri.algaworks.algafood.domain.exception.BusinessException;
 import br.santosfyuri.algaworks.algafood.domain.exception.StateNotFoundException;
 import br.santosfyuri.algaworks.algafood.domain.model.City;
 import br.santosfyuri.algaworks.algafood.domain.repository.CityRepository;
 import br.santosfyuri.algaworks.algafood.domain.service.CityService;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cities")
-public class CityController {
+@RequestMapping(path = "/cities", produces = MediaType.APPLICATION_JSON_VALUE)
+public class CityControllerController implements CityControllerOpenApi {
 
     @Autowired
     private CityRepository cityRepository;
@@ -28,6 +32,10 @@ public class CityController {
         return cityRepository.findAll();
     }
 
+    @ApiResponses({
+            @ApiResponse(responseCode = "400", description = "City ID invalid"),
+            @ApiResponse(responseCode = "404", description = "City not found")
+    })
     @GetMapping(path = "{id}")
     public City find(@PathVariable Long id) {
         return cityService.findOrNull(id);

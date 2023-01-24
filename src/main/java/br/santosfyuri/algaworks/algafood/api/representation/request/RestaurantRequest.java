@@ -1,5 +1,6 @@
 package br.santosfyuri.algaworks.algafood.api.representation.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,9 +14,11 @@ import java.math.BigDecimal;
 @Setter
 public class RestaurantRequest {
 
+    @Schema(example = "Thai Gourmet")
     @NotBlank
     private String name;
 
+    @Schema(example = "12.00")
     @NotNull
     @PositiveOrZero
     private BigDecimal deliveryFee;

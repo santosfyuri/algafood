@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 @RestController
@@ -104,7 +103,7 @@ public class RestaurantProductPhotoController {
     }
 
     private void checkMediaTypeCompatibility(MediaType mediaType,
-                                              List<MediaType> acceptMediaTypes) throws HttpMediaTypeNotAcceptableException {
+                                             List<MediaType> acceptMediaTypes) throws HttpMediaTypeNotAcceptableException {
         boolean compatibility = acceptMediaTypes.stream().anyMatch(acceptMediaType -> acceptMediaType.isCompatibleWith(mediaType));
         if (!compatibility) {
             throw new HttpMediaTypeNotAcceptableException(acceptMediaTypes);

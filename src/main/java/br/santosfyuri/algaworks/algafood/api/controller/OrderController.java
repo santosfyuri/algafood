@@ -2,6 +2,7 @@ package br.santosfyuri.algaworks.algafood.api.controller;
 
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicAssembler;
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicDisassembler;
+import br.santosfyuri.algaworks.algafood.api.openapi.controller.OrderControllerOpenApi;
 import br.santosfyuri.algaworks.algafood.api.representation.request.OrderRequest;
 import br.santosfyuri.algaworks.algafood.api.representation.response.OrderResponse;
 import br.santosfyuri.algaworks.algafood.api.representation.response.OrderResumeResponse;
@@ -26,7 +27,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/orders")
-public class OrderController {
+public class OrderController implements OrderControllerOpenApi {
 
     @Autowired
     private OrderRepository orderRepository;
