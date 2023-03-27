@@ -1,6 +1,7 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicAssembler;
+import br.santosfyuri.algaworks.algafood.api.openapi.controller.RestaurantPaymentMethodControllerOpenApi;
 import br.santosfyuri.algaworks.algafood.api.representation.response.PaymentMethodResponse;
 import br.santosfyuri.algaworks.algafood.domain.model.PaymentMethod;
 import br.santosfyuri.algaworks.algafood.domain.model.Restaurant;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/restaurants/{restaurantId}/payment-methods")
-public class RestaurantPaymentMethodController {
+public class RestaurantPaymentMethodController implements RestaurantPaymentMethodControllerOpenApi {
 
     @Autowired
     private RestaurantService restaurantService;

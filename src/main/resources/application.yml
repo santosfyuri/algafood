@@ -6,7 +6,7 @@ spring:
       minimum-idle: '3'
     username: postgres
     url: jdbc:postgresql://localhost:5432/algafood
-    password: '121797'
+    password: 'y12i'
   jpa:
     properties:
       hibernate:

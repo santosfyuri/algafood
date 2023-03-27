@@ -2,6 +2,7 @@ package br.santosfyuri.algaworks.algafood.api.controller;
 
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicAssembler;
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicDisassembler;
+import br.santosfyuri.algaworks.algafood.api.openapi.controller.UserControllerOpenApi;
 import br.santosfyuri.algaworks.algafood.api.representation.request.UserRequest;
 import br.santosfyuri.algaworks.algafood.api.representation.response.UserResponse;
 import br.santosfyuri.algaworks.algafood.domain.model.User;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserController implements UserControllerOpenApi {
 
     @Autowired
     private UserRepository userRepository;

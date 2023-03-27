@@ -1,6 +1,7 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicAssembler;
+import br.santosfyuri.algaworks.algafood.api.openapi.controller.GroupPermissionControllerOpenApi;
 import br.santosfyuri.algaworks.algafood.api.representation.response.PermissionResponse;
 import br.santosfyuri.algaworks.algafood.domain.model.Group;
 import br.santosfyuri.algaworks.algafood.domain.model.Permission;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/groups/{groupId}/permissions")
-public class GroupPermissionController {
+public class GroupPermissionController implements GroupPermissionControllerOpenApi {
 
     @Autowired
     private GroupService groupService;
@@ -31,13 +32,13 @@ public class GroupPermissionController {
 
     @DeleteMapping("/{permissionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void desassociar(@PathVariable Long groupId, @PathVariable Long permissionId) {
+    public void disassociate(@PathVariable Long groupId, @PathVariable Long permissionId) {
         groupService.disassociatePermission(groupId, permissionId);
     }
 
     @PutMapping("/{permissionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void associar(@PathVariable Long groupId, @PathVariable Long permissionId) {
+    public void associate(@PathVariable Long groupId, @PathVariable Long permissionId) {
         groupService.asassociatePermission(groupId, permissionId);
     }
 }

@@ -1,5 +1,6 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
+import br.santosfyuri.algaworks.algafood.api.openapi.controller.StatisticsControllerOpenApi;
 import br.santosfyuri.algaworks.algafood.domain.dto.DailySale;
 import br.santosfyuri.algaworks.algafood.domain.filter.DailySaleFilter;
 import br.santosfyuri.algaworks.algafood.domain.service.SaleQueryService;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/statistics")
-public class StatisticsController {
+public class StatisticsController implements StatisticsControllerOpenApi {
 
     @Autowired
     private SaleQueryService saleQueryService;

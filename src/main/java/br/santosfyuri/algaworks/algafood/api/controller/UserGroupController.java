@@ -1,6 +1,7 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicAssembler;
+import br.santosfyuri.algaworks.algafood.api.openapi.controller.UserGroupControllerOpenApi;
 import br.santosfyuri.algaworks.algafood.api.representation.response.GroupResponse;
 import br.santosfyuri.algaworks.algafood.domain.model.Group;
 import br.santosfyuri.algaworks.algafood.domain.model.User;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/users/{userId}/groups")
-public class UserGroupController {
+public class UserGroupController implements UserGroupControllerOpenApi {
 
     @Autowired
     private UserService userService;
@@ -31,13 +32,13 @@ public class UserGroupController {
 
     @DeleteMapping("/{groupId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void desassociar(@PathVariable Long userId, @PathVariable Long groupId) {
+    public void disassociate(@PathVariable Long userId, @PathVariable Long groupId) {
         userService.disassociateGroup(userId, groupId);
     }
 
     @PutMapping("/{permissionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void associar(@PathVariable Long userId, @PathVariable Long groupId) {
+    public void associate(@PathVariable Long userId, @PathVariable Long groupId) {
         userService.asassociateGroup(userId, groupId);
     }
 }

@@ -1,6 +1,7 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicAssembler;
+import br.santosfyuri.algaworks.algafood.api.openapi.controller.ResponsibleRestaurantUserControllerOpenApi;
 import br.santosfyuri.algaworks.algafood.api.representation.response.UserResponse;
 import br.santosfyuri.algaworks.algafood.domain.model.Restaurant;
 import br.santosfyuri.algaworks.algafood.domain.model.User;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/restaurants/{restaurantId}/responsible-users")
-public class ResponsibleRestaurantUserController {
+public class ResponsibleRestaurantUserController implements ResponsibleRestaurantUserControllerOpenApi {
 
     @Autowired
     private RestaurantService restaurantService;
@@ -22,7 +23,7 @@ public class ResponsibleRestaurantUserController {
     private BasicAssembler assembler;
 
     @GetMapping
-    public List<UserResponse> listar(@PathVariable Long restaurantId) {
+    public List<UserResponse> list(@PathVariable Long restaurantId) {
         Restaurant restaurante = restaurantService.findOrNull(restaurantId);
 
         return assembler.<User, UserResponse>get(UserResponse.class).entityToRepresentation(restaurante.getResponsibleUsers());

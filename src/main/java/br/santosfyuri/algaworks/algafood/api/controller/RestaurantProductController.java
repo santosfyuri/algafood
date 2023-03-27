@@ -2,6 +2,7 @@ package br.santosfyuri.algaworks.algafood.api.controller;
 
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicAssembler;
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicDisassembler;
+import br.santosfyuri.algaworks.algafood.api.openapi.controller.RestaurantProductControllerOpenApi;
 import br.santosfyuri.algaworks.algafood.api.representation.request.ProductRequest;
 import br.santosfyuri.algaworks.algafood.api.representation.response.ProductResponse;
 import br.santosfyuri.algaworks.algafood.domain.model.Product;
@@ -17,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/restaurants/{restaurantId}/products")
-public class RestaurantProductController {
+public class RestaurantProductController implements RestaurantProductControllerOpenApi {
 
     @Autowired
     private ProductRepository productRepository;

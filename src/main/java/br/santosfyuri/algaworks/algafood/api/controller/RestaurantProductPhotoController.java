@@ -1,6 +1,7 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
 import br.santosfyuri.algaworks.algafood.api.assembler.BasicAssembler;
+import br.santosfyuri.algaworks.algafood.api.openapi.controller.RestaurantProductPhotoControllerOpenApi;
 import br.santosfyuri.algaworks.algafood.api.representation.request.ProductPhotoRequest;
 import br.santosfyuri.algaworks.algafood.api.representation.response.ProductPhotoResponse;
 import br.santosfyuri.algaworks.algafood.domain.exception.EntityNotFoundException;
@@ -24,7 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/restaurants/{restaurantId}/products/{productId}/photo")
-public class RestaurantProductPhotoController {
+public class RestaurantProductPhotoController implements RestaurantProductPhotoControllerOpenApi {
 
     @Autowired
     private ProductService productService;
@@ -41,10 +42,9 @@ public class RestaurantProductPhotoController {
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ProductPhotoResponse updatePhoto(@PathVariable Long restaurantId,
                                             @PathVariable Long productId,
-                                            @RequestParam ProductPhotoRequest productPhotoRequest) throws IOException {
+                                            @RequestParam ProductPhotoRequest productPhotoRequest,
+                                            @RequestPart MultipartFile file) throws IOException {
         Product product = productService.findOrNull(restaurantId, productId);
-
-        MultipartFile file = productPhotoRequest.getArchive();
 
         ProductPhoto photo = ProductPhoto.create()
                 .product(product)

@@ -37,7 +37,11 @@ public class OpenApiConfig {
                         new Tag().name("Orders").description("Manage the orders"),
                         new Tag().name("Restaurants").description("Manage the restaurants"),
                         new Tag().name("States").description("Manage the states"),
-                        new Tag().name("Kitchens").description("Manage the kitchens")));
+                        new Tag().name("Kitchens").description("Manage the kitchens"),
+                        new Tag().name("Restaurant payment methods").description("Manage the restaurant payment methods"),
+                        new Tag().name("Responsible restaurant users").description("Manage the responsible restaurant users"),
+                        new Tag().name("Group permissions").description("Manage the group permissions"),
+                        new Tag().name("Products").description("Manage the products")));
         return openAPI;
     }
 }
