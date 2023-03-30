@@ -1,15 +1,17 @@
 package br.santosfyuri.algaworks.algafood.api.assembler;
 
-import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.List;
+import javax.annotation.Nonnull;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Component
 public final class BasicAssembler {
@@ -20,34 +22,46 @@ public final class BasicAssembler {
     private ModelMapper modelMapper;
 
     @SuppressWarnings("unchecked")
-    public <E, R> GenericAssembler<E, R> get(Class<R> entityType) {
-        if (CACHE.containsKey(entityType)) {
-            return (GenericAssembler<E, R>) CACHE.get(entityType);
+    public <E, R extends RepresentationModel<R>> GenericAssembler<E, R> get(AssemblerParameters<R> assemblerParameters) {
+        if (CACHE.containsKey(assemblerParameters.getEntityType())) {
+            return (GenericAssembler<E, R>) CACHE.get(assemblerParameters.getEntityType());
         }
 
-        GenericAssembler<E, R> assembler = new GenericAssembler<>(modelMapper, entityType);
+        GenericAssembler<E, R> assembler = new GenericAssembler<>(modelMapper, assemblerParameters);
 
-        CACHE.put(entityType, assembler);
+        CACHE.put(assemblerParameters.getEntityType(), assembler);
 
         return assembler;
     }
 
-    @AllArgsConstructor
-    public static class GenericAssembler<E, R> implements IAssembler<E, R> {
+    public static class GenericAssembler<E, R extends RepresentationModel<R>>
+            extends RepresentationModelAssemblerSupport<E, R> implements IAssembler<E, R> {
 
         private final ModelMapper modelMapper;
-        private final Class<R> entityType;
+        private final AssemblerParameters<R> assemblerParameters;
+
+        public GenericAssembler(ModelMapper modelMapper, AssemblerParameters<R> assemblerParameters) {
+            super(assemblerParameters.getControllerType(), assemblerParameters.getEntityType());
+            this.modelMapper = modelMapper;
+            this.assemblerParameters = assemblerParameters;
+        }
+
 
         @Override
-        public R entityToRepresentation(E entity) {
-            return modelMapper.map(entity, this.entityType);
+        @Nonnull
+        public R toModel(@Nonnull E entity) {
+            R entityResponse = modelMapper.map(entity, this.assemblerParameters.getEntityType());
+            if (Objects.nonNull(this.assemblerParameters.getConsumer())) {
+                this.assemblerParameters.getConsumer().accept(entityResponse);
+            }
+            return entityResponse;
         }
 
         @Override
-        public List<R> entityToRepresentation(Collection<E> entities) {
-            return entities.stream()
-                    .map(this::entityToRepresentation)
-                    .collect(Collectors.toList());
+        @Nonnull
+        public CollectionModel<R> toCollectionModel(@Nonnull Iterable<? extends E> entities) {
+            return super.toCollectionModel(entities)
+                    .add(WebMvcLinkBuilder.linkTo(this.assemblerParameters.getControllerType()).withSelfRel());
         }
     }
 }

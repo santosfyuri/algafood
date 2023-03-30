@@ -1,11 +1,10 @@
 package br.santosfyuri.algaworks.algafood.api.assembler;
 
-import java.util.Collection;
-import java.util.List;
+import org.springframework.hateoas.CollectionModel;
 
 public interface IAssembler<E, R> {
 
-    R entityToRepresentation(E entity);
+    R toModel(E entity);
 
-    List<R> entityToRepresentation(Collection<E> entities);
+    CollectionModel<R> toCollectionModel(Iterable<? extends E> entities);
 }

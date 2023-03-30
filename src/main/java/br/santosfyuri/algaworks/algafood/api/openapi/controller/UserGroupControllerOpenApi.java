@@ -4,13 +4,12 @@ import br.santosfyuri.algaworks.algafood.api.representation.response.GroupRespon
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
-import java.util.List;
+import org.springframework.hateoas.CollectionModel;
 
 public interface UserGroupControllerOpenApi {
 
     @Operation(summary = "List all users groups by group ID")
-    public List<GroupResponse> list(@Parameter(description = "User ID", example = "1", required = true) Long groupId);
+    public CollectionModel<GroupResponse> list(@Parameter(description = "User ID", example = "1", required = true) Long groupId);
 
 
     @Operation(summary = "Disassociation of the user with group", responses = {

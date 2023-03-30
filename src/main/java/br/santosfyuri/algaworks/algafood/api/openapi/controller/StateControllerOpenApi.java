@@ -9,15 +9,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
 
 @Tag(name = "States")
 public interface StateControllerOpenApi {
 
     @Operation(summary = "List all states")
-    List<StateResponse> list();
+    CollectionModel<StateResponse> list();
 
     @Operation(summary = "Search a state by ID", responses = {
             @ApiResponse(responseCode = "200"),

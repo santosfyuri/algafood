@@ -1,5 +1,6 @@
 package br.santosfyuri.algaworks.algafood.api.controller;
 
+import br.santosfyuri.algaworks.algafood.api.helpers.ResourceUriHelper;
 import br.santosfyuri.algaworks.algafood.api.openapi.controller.CityControllerOpenApi;
 import br.santosfyuri.algaworks.algafood.domain.exception.BusinessException;
 import br.santosfyuri.algaworks.algafood.domain.exception.StateNotFoundException;
@@ -19,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/cities", produces = MediaType.APPLICATION_JSON_VALUE)
-public class CityControllerController implements CityControllerOpenApi {
+public class CityController implements CityControllerOpenApi {
 
     @Autowired
     private CityRepository cityRepository;
@@ -44,7 +45,9 @@ public class CityControllerController implements CityControllerOpenApi {
     @PostMapping
     public City save(@RequestBody @Valid City city) {
         try {
-            return cityService.save(city);
+            City saveCity = cityService.save(city);
+            ResourceUriHelper.addUriInResponseHeader(saveCity.getId());
+            return saveCity;
         } catch (StateNotFoundException exception) {
             throw new BusinessException(exception.getMessage(), exception);
         }

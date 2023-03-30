@@ -2,20 +2,18 @@ package br.santosfyuri.algaworks.algafood.api.openapi.controller;
 
 import br.santosfyuri.algaworks.algafood.api.representation.request.UserRequest;
 import br.santosfyuri.algaworks.algafood.api.representation.response.UserResponse;
-import br.santosfyuri.algaworks.algafood.domain.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
-import java.util.List;
+import org.springframework.hateoas.CollectionModel;
 
 public interface UserControllerOpenApi {
 
     @Operation(summary = "List all users")
-    List<User> list();
+    CollectionModel<UserResponse> list();
 
     @Operation(summary = "List a user by ID", responses = {
             @ApiResponse(responseCode = "400", description = "Invalid user ID", content = {

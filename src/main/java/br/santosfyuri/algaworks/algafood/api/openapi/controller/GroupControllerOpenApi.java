@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 public interface GroupControllerOpenApi {
 
     @Operation(summary = "List all groups")
-    List<GroupResponse> list();
+    CollectionModel<GroupResponse> list();
 
     @Operation(summary = "Search a group by ID", responses = {
             @ApiResponse(responseCode = "400", description = "Group ID invalid"),

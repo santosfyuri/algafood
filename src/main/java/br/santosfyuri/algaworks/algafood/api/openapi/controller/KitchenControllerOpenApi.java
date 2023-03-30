@@ -8,8 +8,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.PagedModel;
 
 @Tag(name = "Kitchens")
 public interface KitchenControllerOpenApi {
@@ -17,7 +17,7 @@ public interface KitchenControllerOpenApi {
 
     @Operation(summary = "List all kitchens")
     @PageableParameter
-    Page<KitchenResponse> list(@Parameter(hidden = true) Pageable pageable);
+    PagedModel<KitchenResponse> list(@Parameter(hidden = true) Pageable pageable);
 
     @Operation(summary = "Search a kitchen by ID", responses = {
             @ApiResponse(responseCode = "400", description = "Kitchen ID invalid"),
